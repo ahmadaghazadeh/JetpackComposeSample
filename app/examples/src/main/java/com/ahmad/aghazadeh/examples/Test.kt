@@ -21,7 +21,18 @@ fun main() {
         }
     }
 
-    for (i in 1..10000) {
-        println(i)
+    calculate(1, 100, "Message")
+    calculate(message = "Message")
+}
+
+fun calculate(first: Int = 1, second: Int = 100, message: String) {
+    for (i in first..second) {
+        println("$message %i")
     }
 }
+
+fun calculateCatAge(age: Int): Int {
+    return age * 7
+}
+
+fun calculateCatAge2(age: Int): Int = age * 7
