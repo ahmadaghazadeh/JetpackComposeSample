@@ -23,6 +23,16 @@ fun main() {
 
     calculate(1, 100, "Message")
     calculate(message = "Message")
+    enhanceMessage(message = "") {
+        add(12, 12)
+    }
+
+    enhanceMessage(message = "") {
+        12
+    }
+
+    asyncTask("Hello", before = { println("Before") }, after = { println("After") })
+
 }
 
 fun calculate(first: Int = 1, second: Int = 100, message: String) {
@@ -35,4 +45,32 @@ fun calculateCatAge(age: Int): Int {
     return age * 7
 }
 
+val calculateCatAgeLambda: (Int) -> Int = { age -> age * 7 }
+
+val calculateCatAgeLambda2: (Int) -> Int = { it * 7 }
+
+
 fun calculateCatAge2(age: Int): Int = age * 7
+
+fun add(a: Int, b: Int): Int {
+    return a + b
+}
+
+val addLambda: (Int, Int) -> Int = { a, b -> a + b }
+
+fun showName(name: String) {
+    print(name)
+}
+
+val showNameLambda: (String) -> Unit = { name -> print(name) }
+
+fun enhanceMessage(message: String, funAsParameter: () -> Int) {
+    print("$ message ${funAsParameter()}")
+}
+
+fun asyncTask(message: String, before: () -> Unit, after: () -> Unit) {
+    before()
+    println("${message}")
+    after()
+}
+ 
