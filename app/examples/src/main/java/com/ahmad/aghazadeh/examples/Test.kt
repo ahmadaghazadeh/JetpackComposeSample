@@ -8,6 +8,8 @@ fun main() {
     var name: String = "Ahmad"
     print("Hello $name")
 
+
+
     println()
     val amount = 55
 
@@ -32,6 +34,15 @@ fun main() {
     }
 
     asyncTask("Hello", before = { println("Before") }, after = { println("After") })
+
+    val myListOfName = listOf("Ahmad", "Hamed", "Shahrozi")
+    myListOfName.forEach { name ->
+        print(name)
+    }
+
+    for (name in myListOfName) {
+        print(name)
+    }
 
 }
 
