@@ -2,26 +2,48 @@ package com.ahmad.aghazadeh.examples
 
 fun main() {
 
-    val car = Car("Red", "BMW")
-    car.drive()
+//    val car = Car("Red", "BMW")
+//    car.drive()
+//
+//    val truck = Truck("Blue", "Volvo")
+//    truck.drive()
+//    truck.speedUp()
+//
+//    val button = Button("First")
+//    button.onClick("New Message")
+//
+//    val name: String = "Ahmad"
+//
+//    val newString = name.append(" Use Extention Method")
+//
+//    println(newString)
+//
+//    println(" Use Extention Method".removeFirstAndLastChar())
+//
+    val ahmad = Person(name = "Ahmad", lastName = "Aghazadeh", age = 41)
+    val hamed = Person(name = "Hamed", lastName = "Roshangar", age = 41)
+    val shahrooz = Person(name = "Shahrooz", lastName = "Ansari", age = 41)
 
-    val truck = Truck("Blue", "Volvo")
-    truck.drive()
-    truck.speedUp()
+    val listOfPerson = listOf(ahmad, hamed, shahrooz)
+    val finderPerson = Finder<Person>(listOfPerson)
+    finderPerson.findItem(hamed) {
+        println(it)
+    }
 
-    val button = Button("First")
-    button.onClick("New Message")
+    val listOfString = listOf<String>("Ahmad", "Aghazadeh", "Ahmad", "A")
+    val finder = Finder(listOfString)
 
-    val name: String = "Ahmad"
+    finder.findItem("Ahmad") {
+        println(it)
+    }
 
-    val newString = name.append(" Use Extention Method")
+    val listofInt = listOf<Int>(1, 2, 3, 4, 5, 6, 7, 8, 9)
+    val finderint = Finder<Int>(listofInt)
+    finderint.findItem(3) {
+        println(it)
+    }
 
-    println(newString)
 
-    println(" Use Extention Method".removeFirstAndLastChar())
-
-    val person = Person(name = "Ahmad", lastName = "Aghazadeh", age = 41)
-    println(person)
 }
 
 data class Person(val name: String, val lastName: String, val age: Int)
@@ -68,3 +90,21 @@ fun String.removeFirstAndLastChar(): String {
     return substring(1, length - 1)
 }
 
+class Finder<T>(private val list: List<T>) {
+    fun findItem(element: T, foundItem: (element: T?) -> Unit) {
+        val itemFoundList = list.filter {
+            it == element
+        }
+        if (itemFoundList.isNullOrEmpty()) {
+            foundItem(null)
+        } else {
+            foundItem(itemFoundList[0])
+        }
+    }
+}
+
+enum class Result {
+    SUCCESS,
+    FAILURE,
+    ERROR
+}
