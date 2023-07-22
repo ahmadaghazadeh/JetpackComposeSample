@@ -93,6 +93,7 @@ private fun exampleOfBranch() {
     }
 }
 
+
 private fun exampleOfLists() {
     val myListOfName = listOf("Ahmad", "Hamed", "Shahrozi")
     val myMutableListOfName = mutableListOf("Ahmad", "Hamed", "Shahrozi")
@@ -109,6 +110,20 @@ private fun exampleOfLists() {
     println(myMutableListOfName.get(0))
 
     println(myMutableListOfName[0])
+
+    calculate(1, 100, "Message")
+    calculate(message = "Message")
+    enhanceMessage(message = "") {
+        add(12, 12)
+    }
+
+    enhanceMessage(message = "") {
+        12
+    }
+
+    asyncTask("Hello", before = { println("Before") }, after = { println("After") })
+
+ 
 }
 
 fun calculate(first: Int = 1, second: Int = 100, message: String) {
