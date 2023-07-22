@@ -1,16 +1,85 @@
 package com.ahmad.aghazadeh.examples
 
 fun main() {
+//    exmapleOfDeclaration()
+//
+//    exampleOfBranch()
+//
+//    exampleOfFuction()
+//
+//    asyncTask("Hello", before = { println("Before") }, after = { println("After") })
+//
+//    exampleOfLists()
+
+    // exampleOfSet()
+
+    //exampleOfMap()
+
+    //collectionEmpty()
+
+    filtterCollection()
+
+}
+
+fun filtterCollection() {
+    val myCollection = listOf("Ahmad", "Shahrooz", "Hamed", "Danial")
+    val found = myCollection.filter {
+        it.startsWith("S", ignoreCase = true) || it.endsWith("D", ignoreCase = true)
+    }
+    println(found)
+}
+
+fun collectionEmpty() {
+    val MyCollection = emptyArray<String>()
+    MyCollection[0] = ""
+}
+
+fun exampleOfMap() {
+    // Key value pair
+    val secretMap = mapOf("Up" to 1, "Down" to 2, "Left" to 3, "Right" to 4)
+    println(secretMap)
+    println(secretMap.keys + " " + secretMap.values)
+    if ("Up" in secretMap) {
+        println("Yes it is")
+    }
+    val myMutableMap = mutableMapOf(1 to "Ahmad", 2 to "Shahrooz")
+    myMutableMap.put(3, "Hamed")
+    myMutableMap[3] = "Hamed"
+}
+
+fun exampleOfSet() {
+    // Set is unique
+    val mySet = setOf(1, 2, 3, 4, 5, 1)
+    println(mySet)
+
+    val myMutableSet = mutableSetOf(1, 2, 3)
+    myMutableSet.add(2)
+    println(myMutableSet)
+
+}
+
+private fun exmapleOfDeclaration() {
     val myName = "something" // immutable
     var canChangeValue = "Android" // mutable
     print("Print $canChangeValue and $myName")
 
     var name: String = "Ahmad"
     print("Hello $name")
+}
 
+private fun exampleOfFuction() {
+    calculate(1, 100, "Message")
+    calculate(message = "Message")
+    enhanceMessage(message = "") {
+        add(12, 12)
+    }
 
+    enhanceMessage(message = "") {
+        12
+    }
+}
 
-    println()
+private fun exampleOfBranch() {
     val amount = 55
 
     when (amount) {
@@ -22,28 +91,24 @@ fun main() {
             print("$amount is just not going to work")
         }
     }
+}
 
-    calculate(1, 100, "Message")
-    calculate(message = "Message")
-    enhanceMessage(message = "") {
-        add(12, 12)
-    }
-
-    enhanceMessage(message = "") {
-        12
-    }
-
-    asyncTask("Hello", before = { println("Before") }, after = { println("After") })
-
+private fun exampleOfLists() {
     val myListOfName = listOf("Ahmad", "Hamed", "Shahrozi")
+    val myMutableListOfName = mutableListOf("Ahmad", "Hamed", "Shahrozi")
+    myMutableListOfName.add("Ahmad")
+
     myListOfName.forEach { name ->
-        print(name)
+        println(name)
+    }
+    myMutableListOfName.removeAt(0)
+    for (name in myMutableListOfName) {
+        println(name)
     }
 
-    for (name in myListOfName) {
-        print(name)
-    }
+    println(myMutableListOfName.get(0))
 
+    println(myMutableListOfName[0])
 }
 
 fun calculate(first: Int = 1, second: Int = 100, message: String) {
