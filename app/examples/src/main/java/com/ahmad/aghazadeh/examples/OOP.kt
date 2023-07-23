@@ -43,7 +43,7 @@ fun main() {
 //        println(it)
 //    }
 
-    var input = Result.ERROR
+    var input = NotLoading
     getResult(input)
 
     Repository.startFetch()
@@ -97,6 +97,7 @@ fun String.removeFirstAndLastChar(): String {
     return substring(1, length - 1)
 }
 
+
 class Finder<T>(private val list: List<T>) {
     fun findItem(element: T, foundItem: (element: T?) -> Unit) {
         val itemFoundList = list.filter {
@@ -112,37 +113,47 @@ class Finder<T>(private val list: List<T>) {
 
 fun getResult(result: Result) {
     return when (result) {
-        Result.SUCCESS -> println("SUCCESS")
-        Result.FAILURE -> println("FAILURE")
-        Result.ERROR -> println("ERROR")
-        Result.IDLE -> println("IDLE")
-        Result.LOADING -> println("LOADING")
+        is Error -> {
+            println(result.exception.toString())
+        }
+
+        is Loading -> {
+            println("Loading...")
+        }
+
+        is Success -> {
+            println(result.dataFetched ?: "Ensure call start")
+        }
+
+        is NotLoading -> {
+            println("IDLE")
+        }
     }
 }
 
-enum class Result {
-    SUCCESS,
-    FAILURE,
-    ERROR,
-    IDLE,
-    LOADING
-}
+
+//abstract class Result
+sealed class Result
+data class Success(val dataFetched: String?) : Result()
+data class Error(val exception: Exception) : Result()
+object NotLoading : Result()
+object Loading : Result()
 
 object Repository {
-    private var LoadState: Result = Result.IDLE
+    private var LoadState: Result = NotLoading
     private var dataFetched: String? = null
     fun startFetch() {
-        LoadState = Result.LOADING
+        LoadState = Loading
         dataFetched = "data"
     }
 
     fun finishFetch() {
-        LoadState = Result.SUCCESS
+        LoadState = Success(dataFetched)
         dataFetched = null
     }
 
     fun errorFetch() {
-        LoadState = Result.ERROR
+        LoadState = Error(exception = Exception("New exception"))
         dataFetched = null
     }
 
@@ -150,3 +161,35 @@ object Repository {
         return LoadState
     }
 }
+
+
+//enum class Result {
+//    SUCCESS,
+//    FAILURE,
+//    ERROR,
+//    IDLE,
+//    LOADING
+//}
+//
+//object Repository {
+//    private var LoadState: Result = Result.IDLE
+//    private var dataFetched: String? = null
+//    fun startFetch() {
+//        LoadState = Result.LOADING
+//        dataFetched = "data"
+//    }
+//
+//    fun finishFetch() {
+//        LoadState = Result.SUCCESS
+//        dataFetched = null
+//    }
+//
+//    fun errorFetch() {
+//        LoadState = Result.ERROR
+//        dataFetched = null
+//    }
+//
+//    fun getCurrentLoadState(): Result {
+//        return LoadState
+//    }
+//}
