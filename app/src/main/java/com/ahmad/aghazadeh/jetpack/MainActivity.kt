@@ -81,6 +81,9 @@ fun MyApp() {
 
 @Composable
 fun CreateCircles() {
+    var monenyC = remember {
+        mutableStateOf(0)
+    }
     var moneyCounter by remember {
         mutableStateOf(0)
     }
@@ -89,6 +92,7 @@ fun CreateCircles() {
             .padding(3.dp)
             .size(100.dp)
             .clickable {
+                monenyC.value += 1
                 moneyCounter += 1
                 Log.d("moneyCounter", moneyCounter.toString())
             },
@@ -103,7 +107,10 @@ fun CreateCircles() {
                 .fillMaxWidth()
                 .fillMaxHeight(), contentAlignment = Alignment.Center
         ) {
-            Text(text = "Tap $moneyCounter", modifier = Modifier)
+            Column(){
+                Text(text = "Tap ${monenyC.value}", modifier = Modifier)
+                Text(text = "Tap $moneyCounter", modifier = Modifier)
+            }
         }
     }
 }
