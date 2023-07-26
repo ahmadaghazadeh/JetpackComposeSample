@@ -1,23 +1,23 @@
 package com.ahmad.aghazadeh.jetpack
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AttachMoney
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,12 +27,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ahmad.aghazadeh.jetpack.ui.theme.JetpackTheme
 
 class MainActivity : ComponentActivity() {
@@ -41,75 +41,88 @@ class MainActivity : ComponentActivity() {
         setContent {
             JetpackTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    MyApp()
+                Surface(
+                    modifier = Modifier.padding(8.dp),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    Column {
+                        MyApp()
+                        MainContent()
+                    }
                 }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun MyApp() {
-//    var monenyC = remember {
-//        mutableStateOf(0)
-//    }
-//    monenyC.value += 1
-    var moneyCounter by remember {
-        mutableStateOf(0)
-    }
+fun TopHeader(totalPerPerson: Double = 134.0) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(), color = Color(0xff546e7a)
+            .height(150.dp)
+            .clip(
+                shape = CircleShape.copy(all = CornerSize(12.dp)),
+            ), color = MaterialTheme.colorScheme.primary
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+            var total = "$%.0f".format(totalPerPerson)
             Text(
-                text = "$ $moneyCounter",
-                style = TextStyle(
-                    color = Color.White,
-                    fontSize = 40.sp,
-                    fontWeight = FontWeight.ExtraBold
-                )
+                text = "Total Per Person",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.inversePrimary
             )
-            Spacer(modifier = Modifier.height(100.dp))
-            CreateCircles(moneyCounter = moneyCounter) {
-                moneyCounter++
-            }
+            Text(
+                text = total,
+                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = false)
 @Composable
-fun CreateCircles(moneyCounter: Int = 0, updateMoneyCounter: (Int) -> Unit = {}) {
+fun MainContent() {
 
-    Card(
+    var text by remember {
+        mutableStateOf("1234")
+    }
+
+    Surface(
         modifier = Modifier
-            .padding(3.dp)
-            .size(100.dp)
-            .clickable {
-                updateMoneyCounter(moneyCounter)
-                Log.d("moneyCounter", moneyCounter.toString())
-            },
+            .fillMaxWidth()
+            .height(250.dp),
+        shape = CircleShape.copy(all = CornerSize(8.dp)),
+        border = BorderStroke(width = 1.dp, color = Color.LightGray)
+    ) {
+        Column (modifier = Modifier.padding(12.dp)) {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text("Label") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.AttachMoney,
+                        contentDescription = "Money Icon"
+                    )
+                },
+                singleLine = true,
+                textStyle = MaterialTheme.typography.bodyLarge,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
 
-        shape = CircleShape,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-
-        ) {
-        Box(
-            modifier =
-            Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(), contentAlignment = Alignment.Center
-        ) {
-            Text(text = "Tap", modifier = Modifier)
         }
     }
+}
+
+@Preview(showBackground = false)
+@Composable
+fun MyApp() {
+    TopHeader()
 }
