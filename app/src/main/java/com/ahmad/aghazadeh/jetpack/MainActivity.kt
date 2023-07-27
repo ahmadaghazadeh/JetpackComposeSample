@@ -1,7 +1,6 @@
 package com.ahmad.aghazadeh.jetpack
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -36,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -56,10 +56,65 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     MyApp()
-
                 }
             }
         }
+    }
+}
+
+
+@Preview(showBackground = false)
+@Composable
+fun MyApp(onValChange: (String) -> Unit = {}) {
+
+    var totalBillState by remember {
+        mutableStateOf("")
+    }
+
+    val validateBillState = remember(totalBillState) {
+        totalBillState.trim().isNotEmpty()
+    }
+
+    var sliderTipValue by remember {
+        mutableStateOf(0.35f)
+    }
+
+    var splitValue by remember {
+        mutableStateOf(1)
+    }
+
+    var tipAmount by remember(totalBillState) {
+        mutableStateOf(0.0)
+    }
+
+    val tipPerPerson = remember(tipAmount, splitValue, totalBillState) {
+        tipAmount / splitValue
+    }
+
+    val keyboardController = LocalFocusManager.current
+
+
+    Column {
+        TopHeader(tipPerPerson)
+
+        TipMainContent(
+            totalBillState = totalBillState,
+            validateBillState = validateBillState,
+            onTotalBillChange = {
+                totalBillState = it
+            },
+            onSplitValueChange = {
+                splitValue = it
+            },
+            onPercentChange = {
+                sliderTipValue = it
+                tipAmount = calculateTotalTip(it.toDouble(), totalBillState.toInt())
+            },
+            keyboardController,
+            splitValue,
+            sliderTipValue,
+            tipAmount
+        )
     }
 }
 
@@ -94,40 +149,19 @@ fun TopHeader(totalPerPerson: Double = 134.0) {
 }
 
 
-@Preview(showBackground = false)
 @Composable
-fun MainContent() {
-    BillForm { billAmount ->
-        Log.d("billAmount", billAmount)
-    }
-
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BillForm(
-    modifier: Modifier = Modifier,
-    onValChange: (String) -> Unit = {},
+private fun TipMainContent(
+    totalBillState: String,
+    validateBillState: Boolean,
+    onTotalBillChange: (String) -> Unit,
+    onSplitValueChange: (Int) -> Unit,
+    onPercentChange: (Float) -> Unit,
+    keyboardController: FocusManager,
+    splitValue: Int,
+    sliderTipValue: Float,
+    tipAmount: Double
 ) {
-    var totalBillState by remember {
-        mutableStateOf("")
-    }
-
-    val validateBillState = remember(totalBillState) {
-        totalBillState.trim().isNotEmpty()
-    }
-
-    var sliderTipValue by remember {
-        mutableStateOf(0.35f)
-    }
-
-    var splitValue by remember {
-        mutableStateOf(1)
-    }
-
-
-    val keyboardController = LocalFocusManager.current
-
 
     Surface(
         modifier = Modifier
@@ -147,7 +181,7 @@ fun BillForm(
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = totalBillState,
-                onValueChange = { totalBillState = it },
+                onValueChange = { onTotalBillChange(it) },
                 label = { Text("Enter Bill") },
                 leadingIcon = {
                     Icon(
@@ -160,23 +194,27 @@ fun BillForm(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 keyboardActions = KeyboardActions {
                     if (!validateBillState) return@KeyboardActions
-                    onValChange(totalBillState.trim())
+                    onTotalBillChange(totalBillState.trim())
                     keyboardController.clearFocus()
                 }
             )
             if (validateBillState) {
-                CreateSplit(splitValue, onValChange = {
-                                                      splitValue = it
-                }, totalBillState)
-                CreateTip()
+                CreateSplit(splitValue, onValChange = onSplitValueChange)
+                CreateTip(tipAmount)
                 CreateSliderTip(
                     sliderTipValue = sliderTipValue,
-                    onValueChange = {
-                        sliderTipValue = it
-                    })
+                    onValueChange = onPercentChange
+                )
             }
         }
     }
+}
+
+fun calculateTotalTip(
+    totalBill: Double,
+    tipPercentage: Int
+): Double {
+    return ((totalBill * tipPercentage))
 }
 
 @Composable
@@ -204,7 +242,8 @@ private fun CreateSliderTip(sliderTipValue: Float, onValueChange: (Float) -> Uni
 
 
 @Composable
-fun CreateTip() {
+fun CreateTip(tipAmount: Double) {
+
     Row(
         modifier = Modifier.padding(4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -214,9 +253,8 @@ fun CreateTip() {
         Spacer(modifier = Modifier.weight(1.0f))
         Text(
             modifier = Modifier
-                .padding(start = 8.dp, end = 8.dp)
-                .width(25.dp),
-            text = "55"
+                .padding(start = 8.dp, end = 8.dp),
+            text = "$%.0f".format(tipAmount)
         )
     }
 }
@@ -225,7 +263,6 @@ fun CreateTip() {
 private fun CreateSplit(
     splitValue: Int,
     onValChange: (Int) -> Unit,
-    totalBillState: String,
 ) {
     val range = IntRange(start = 0, endInclusive = 100)
     Row(
@@ -259,14 +296,5 @@ private fun CreateSplit(
                 }
             }
         )
-    }
-}
-
-@Preview(showBackground = false)
-@Composable
-fun MyApp() {
-    Column {
-        TopHeader()
-        MainContent()
     }
 }
